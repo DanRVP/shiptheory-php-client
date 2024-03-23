@@ -43,7 +43,7 @@ class CredentialsAccessToken extends AbstractAccessToken
     private function retrieveToken(): void
     {
         $request = ShiptheoryRequestFactory::createRequest(
-            ShiptheoryRequestFactory::HTTP_GET,
+            ShiptheoryRequestFactory::HTTP_POST,
             '/token',
             '',
             json_encode([
@@ -53,7 +53,7 @@ class CredentialsAccessToken extends AbstractAccessToken
         );
 
         $response = $this->http_client->sendRequest($request);
-        $body = json_decode(stream_get_contents($response->getBody()), true);
+        $body = json_decode($response->getBody()->getContents(), true);
         if (is_null($body)) {
             throw new Exception('Unable to decode token response');
         }

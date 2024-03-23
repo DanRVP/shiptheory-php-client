@@ -23,8 +23,8 @@ class ShiptheoryClient
     public function __construct(
         private ClientInterface $http_client,
         private AbstractAccessToken $access_token,
-        private ?LoggerInterface $logger,
-        private ?string $partner_tag,
+        private ?LoggerInterface $logger = null,
+        private ?string $partner_tag = null,
     ) {
         if (is_null($logger)) {
             $this->logger = new NullLogger();
@@ -88,7 +88,7 @@ class ShiptheoryClient
      * @return \Psr\Http\Message\ResponseInterface
      * @link https://shiptheory.com/developer/index.html#list-shipments
      */
-    public function listShipment(string $query_params): ResponseInterface
+    public function listShipment(string $query_params = ''): ResponseInterface
     {
         return $this->makeRequest(ShiptheoryRequestFactory::HTTP_GET, '/shipments/list' . $query_params);
     }
@@ -100,7 +100,7 @@ class ShiptheoryClient
      * @return \Psr\Http\Message\ResponseInterface
      * @link https://shiptheory.com/developer/index.html#search-shipments
      */
-    public function searchShipments(string $query_params): ResponseInterface
+    public function searchShipments(string $query_params = ''): ResponseInterface
     {
         return $this->makeRequest(ShiptheoryRequestFactory::HTTP_GET, '/shipments/search' . $query_params);
     }
@@ -146,7 +146,7 @@ class ShiptheoryClient
      * @return \Psr\Http\Message\ResponseInterface
      * @link https://shiptheory.com/developer/index.html#packages
      */
-    public function getPackageSizes(string $query_params): ResponseInterface
+    public function getPackageSizes(string $query_params = ''): ResponseInterface
     {
         return $this->makeRequest(ShiptheoryRequestFactory::HTTP_GET, '/packages/sizes' . $query_params);
     }
@@ -195,7 +195,7 @@ class ShiptheoryClient
      * @return \Psr\Http\Message\ResponseInterface
      * @link https://shiptheory.com/developer/index.html#list-products
      */
-    public function listProducts(string $query_params): ResponseInterface
+    public function listProducts(string $query_params = ''): ResponseInterface
     {
         return $this->makeRequest(ShiptheoryRequestFactory::HTTP_GET, '/products' . $query_params);
     }
@@ -243,7 +243,7 @@ class ShiptheoryClient
      * @return \Psr\Http\Message\ResponseInterface
      * @link https://shiptheory.com/developer/index.html#list-tags
      */
-    public function listTags(string $query_params): ResponseInterface
+    public function listTags(string $query_params = ''): ResponseInterface
     {
         return $this->makeRequest(ShiptheoryRequestFactory::HTTP_GET, '/tags' . $query_params);
     }
