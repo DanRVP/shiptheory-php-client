@@ -2,7 +2,7 @@
 
 namespace ShiptheoryClient\Authorization;
 
-class PermanentAccessToken implements AccessTokenInterface
+class PermanentAccessToken extends AbstractAccessToken
 {
     /**
      * Contructor
@@ -10,7 +10,7 @@ class PermanentAccessToken implements AccessTokenInterface
      * @param string $token Permanent Shiptheory access token.
      */
     public function __construct(
-        private string $token,
+        private string $token
     ) {}
 
     /**

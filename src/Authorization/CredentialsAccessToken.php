@@ -3,19 +3,15 @@
 namespace ShiptheoryClient\Authorization;
 
 use DateTime;
-use Psr\Http\Client\ClientInterface;
+use Exception;
+use ShiptheoryClient\ShiptheoryRequestFactory;
 
-class CredentialsAccessToken implements AccessTokenInterface
+class CredentialsAccessToken extends AbstractAccessToken
 {
     /**
      * @var string The access token itself.
      */
     private string $token;
-
-    /**
-     * @var DateTime Datetime stamp of when the token was generated.
-     */
-    private ?DateTime $token_age;
 
     /**
      * Contructor
@@ -26,7 +22,6 @@ class CredentialsAccessToken implements AccessTokenInterface
     public function __construct(
         private string $username,
         private string $password,
-        private ClientInterface $api_client,
     ) {}
 
     /**
@@ -42,10 +37,41 @@ class CredentialsAccessToken implements AccessTokenInterface
 
     /**
      * Get a new access token and save it into memory.
+     *
+     * @throws Exception
      */
     private function retrieveToken(): void
     {
-        $this->token = '';
+        $request = ShiptheoryRequestFactory::createRequest(
+            ShiptheoryRequestFactory::HTTP_GET,
+            '/token',
+            '',
+            json_encode([
+                'email' => $this->username,
+                'password' => $this->password,
+            ])
+        );
+
+        $response = $this->http_client->sendRequest($request);
+        $body = json_decode(stream_get_contents($response->getBody()), true);
+        if (is_null($body)) {
+            throw new Exception('Unable to decode token response');
+        }
+
+        if ($response->getStatusCode() !== 200) {
+            $error = 'Unable to authorise with Shiptheory';
+            if (!empty($body['message'])) {
+                $error .= ' The error from Shiptheory was: ' . $body['message'];
+            }
+
+            throw new Exception($error);
+        }
+
+        if (empty($body['data']['token'])) {
+            throw new Exception('Shiptheory returned an OK response but the token is missing');
+        }
+
+        $this->token = $body['data']['token'];
     }
 
     /**
@@ -65,17 +91,41 @@ class CredentialsAccessToken implements AccessTokenInterface
      */
     private function checkTokenLifeExpired(): bool
     {
-        if (is_null($this->token_age)) {
+        if (is_null($this->token)) {
             return false;
         }
 
-        $diff = $this->token_age->diff(new DateTime());
-        $minutes = 0;
-        $minutes += $diff->d * 1440;
-        $minutes += $diff->h * 60;
-        $minutes += $diff->i;
+        $token_data = $this->decodeToken($this->token);
+        $expires = date_timestamp_set(new DateTime(), $token_data[1]['exp']);
+        $expires->modify("-30 seconds");
+        return $expires < new DateTime();
+    }
 
-        // Expire tokens 2 mins before expiry in case speeds are slow
-        return $minutes > 58;
+    /**
+     * Decode a JWT token and all its parts. Does not verify signature.
+     *
+     * @throws Exception
+     */
+    private function decodeToken(string $token): array
+    {
+        $parts = explode('.', $token);
+        if (!$parts) {
+            throw new Exception('Invalid JWT token');
+        }
+
+        $parts = array_map('base64_decode', $parts);
+        if (count($parts) !== 3) {
+            throw new Exception('Invalid JWT token');
+        }
+
+        $sig = array_pop($parts);
+        $parts = array_map(fn($value) => json_decode($value, true), $parts);
+        $parts[] = $sig;
+
+        if (count($parts) !== 3) {
+            throw new Exception('Unable to decode JWT token');
+        }
+
+        return $parts;
     }
 }
