@@ -2,6 +2,7 @@
 Client to handle sending HTTP requests to the Shiptheory V1 REST API. Handles logging, authentication/refreshing tokens. Uses PSR compliant interfaces and dependency injection where possible.
 
 **View on Pakagist:** https://packagist.org/packages/dan-rogers/shiptheory-php-client
+
 **View Shiptheory API Docs**: https://shiptheory.com/developer/index.html
 
 ## Installation
