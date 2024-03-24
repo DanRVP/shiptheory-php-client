@@ -30,7 +30,9 @@ class ShiptheoryClient
             $this->logger = new NullLogger();
         }
 
-        $access_token->setHttpClient($this->http_client);
+        $access_token
+            ->setHttpClient($this->http_client)
+            ->setPartnerTag($this->partner_tag);
     }
 
     /**
@@ -44,7 +46,14 @@ class ShiptheoryClient
     public function makeRequest(string $method, string $uri, ?string $body = null): ResponseInterface
     {
         $transaction_id = md5($method . $uri . time());
-        $request = ShiptheoryRequestFactory::createRequest($method, $uri, $this->access_token->getToken(), $body);
+        $request = ShiptheoryRequestFactory::createRequest(
+            $method,
+            $uri,
+            $this->access_token->getToken(),
+            $body,
+            $this->partner_tag
+        );
+
         $this->logger->debug($transaction_id . "\r\n" . HttpMessageTranslator::toHttpMessageString($request));
 
         try {

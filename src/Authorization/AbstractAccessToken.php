@@ -12,6 +12,11 @@ abstract class AbstractAccessToken
     protected ClientInterface $http_client;
 
     /**
+     * @var string Shiptheory Partner Tag.
+     */
+    protected string $partner_tag;
+
+    /**
      * Returns an access token string to be used in API requests.
      */
     abstract public function getToken(): string;
@@ -24,6 +29,18 @@ abstract class AbstractAccessToken
     public function setHttpClient(ClientInterface $http_client): self
     {
         $this->http_client = $http_client;
+
+        return $this;
+    }
+
+    /**
+     * Set the value of partner_tag
+     *
+     * @param string Shiptheory partner tag.
+     */
+    public function setPartnerTag(string $partner_tag): self
+    {
+        $this->partner_tag = $partner_tag;
 
         return $this;
     }

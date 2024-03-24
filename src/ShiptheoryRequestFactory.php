@@ -51,15 +51,19 @@ final class ShiptheoryRequestFactory
         string $method,
         string $path,
         string $access_token,
-        ?string $body = null
+        ?string $body = null,
+        ?string $partner_tag = null
     ) {
         return new Request(
             $method,
             self::BASE_URL . $path,
-            array_merge(
+            array_filter(array_merge(
                 self::HEADERS,
-                ['Authorization' => "Bearer $access_token"]
-            ),
+                [
+                    'Authorization' => "Bearer $access_token",
+                    'Shiptheory-Partner-Tag' => $partner_tag,
+                ]
+            )),
             $body,
         );
     }
