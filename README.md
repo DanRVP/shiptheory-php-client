@@ -12,8 +12,8 @@ The client uses DI in conjunction with existing PSR standards so that you can op
 ### Tokens
 #### Types of Token
 Shiptheory offers 2 kinds of authentication:
-1. Credential based access: Users must pass their login credentials to the `/token` endpoint to exchange them for a JWT access token which can then be used in subsequent requests. This token lasts for one hour, but a new one can be generated at any time. 
-2. Permanent tokens: You can generate an unchanging, permanent token by logging into your account and going to https://helm.shiptheory.com/user_tokens
+1. **Credential based access:** Users must pass their login credentials to the `/token` endpoint to exchange them for a JWT access token which can then be used in subsequent requests. This token lasts for one hour, but a new one can be generated at any time. 
+2. **Permanent tokens:** You can generate an unchanging, permanent token by logging into your account and going to https://helm.shiptheory.com/user_tokens
 
 #### Implementation
 To use credential access tokens you should pass an instance of `ShiptheoryClient\Authorization\CredentialsAccessToken` to your new instance of the Shiptheory Client. The token will automatically refresh itself. When instantiated you must pass your username and password as arguments.
