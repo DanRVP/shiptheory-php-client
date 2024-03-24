@@ -1,7 +1,7 @@
 # shiptheory-php-client
 Client to handle sending HTTP requests to the Shiptheory V1 REST API. Handles logging, authentication/refreshing tokens. Uses PSR compliant interfaces and dependency injection where possible.
 
-## Installation 
+## Installation
 ```
 composer require dan-rogers/shiptheory-php-client
 ```
@@ -21,8 +21,11 @@ use ShiptheoryClient\ShiptheoryClient;
 
 $client = new Client();
 $token =  new CredentialsAccessToken('dan.rogers@shiptheory.com', 'password');
-$log = new Logger('name');
-$log->pushHandler(new StreamHandler('path/to/your.log', Level::Debug));
+
+$log = new Logger('Shiptheory');
+$handler = new StreamHandler('/path/to/your/logfile.log', Level::Debug);
+$handler->setFormatter(new LineFormatter(null, null, true, true));
+$log->pushHandler($handler);
 
 $shiptheory = new ShiptheoryClient($client, $token, $log, 'partner_tag');
 
