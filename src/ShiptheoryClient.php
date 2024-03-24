@@ -3,6 +3,7 @@
 namespace ShiptheoryClient;
 
 use Exception;
+use HttpMessageTranslator;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -44,7 +45,7 @@ class ShiptheoryClient
     public function makeRequest(string $method, string $uri, ?string $body = null): ResponseInterface
     {
         $request = ShiptheoryRequestFactory::createRequest($method, $uri, $this->access_token->getToken(), $body);
-        $this->logger->debug('Stringed request');
+        $this->logger->debug(HttpMessageTranslator::toHttpMessageString($request));
 
         try {
             $response = $this->http_client->sendRequest($request);
@@ -53,7 +54,7 @@ class ShiptheoryClient
             throw $e;
         }
 
-        $this->logger->debug('Stringed response');
+        $this->logger->debug(HttpMessageTranslator::toHttpMessageString($request));
         return $response;
     }
 
